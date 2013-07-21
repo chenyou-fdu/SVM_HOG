@@ -1,17 +1,18 @@
+__author__ = 'Wong Sylvia'
+
+from skimage import data, io, filter
+from skimage.color import rgb2gray
+from skimage import data
+from skimage import transform
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from sklearn import svm
+import numpy
 from myHog import hog
 import cPickle as pickle
-from sklearn import svm
-import matplotlib.image as mpimg
-from skimage.color import rgb2gray
-from skimage import transform
-import numpy
-filename = "savedLinearSVM19999.pkl"
-with open(filename,'r') as f:
-	LinearClf1 = pickle.load(f)
-
 imgs = []
 #results = []
-for i in range(20000,29968):
+for i in range(19999):
 	if i <= 98 and i > 8:
 		ori_IMG = 'images/000' + str(i+1) + '.jpg'
 		imgs.append(ori_IMG)
@@ -27,12 +28,10 @@ for i in range(20000,29968):
 	else:
 		ori_IMG = 'images/0000' + str(i+1) + '.jpg'
 		imgs.append(ori_IMG)
-
 count = 0
-
 for i in range(len(imgs)):
-	# if count % 100 == 0:
-	# 	print imgs[i]
+	if count % 100 == 0:
+		print imgs[i]
 	count += 1
 	#print i
 	img = mpimg.imread(imgs[i])
@@ -43,22 +42,18 @@ for i in range(len(imgs)):
 	result = (result.ravel()).tolist()
 	#results.append(result)
 	imgs[i] = result
-print "...Load OK!"
-
 
 f = open('lables.txt')
 data = f.readlines()
 f.close
 for i in range(len(data)):
 	data[i] = int(data[i][10])
-data = data[20000:29968]
+data = data[0:19999]
 
-p = []
-correct = 0
-for i in range(len(imgs)):
-    p.append(LinearClf1.predict(imgs[i]))
-    if p[i] == data[i]:
-        correct+=1
-    else:
-        print i+1," : ", p[i]
-print  correct
+LinearClf1 = svm.LinearSVC()
+LinearClf1.fit(imgs,data)
+filename3 = "savedLinearSVM19999.pkl"
+
+with open(filename3,'w') as f2:
+	pname3 = pickle.dump(LinearClf1,f2)
+print "DONE!"
